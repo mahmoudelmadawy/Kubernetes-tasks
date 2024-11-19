@@ -1,0 +1,35 @@
+--kbe ctl install :
+
+
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+:: test ::
+
+kubectl version --client
+
+link  :
+
+https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+
+-------------------------------------------------------------------------
+
+- -- install kind
+    - --install Kubect
+
+[ $(uname -m) = x86_64 ] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.24.0/kind-linux-amd64
+
+chmod +x ./kind
+sudo mv ./kind /usr/local/bin/kind
+
+kind create cluster --name kind-2
+
+kind get clusters
+kind delete cluster
+
+kubectl cluster-info --context kind-kind
+
+kind load docker-image my-custom-image-0 my-custom-image-1
+
+docker exec -it my-node-name crictl images
