@@ -1,0 +1,210 @@
+create pods
+
+impertive :
+
+kubectl run web --image=nginx 
+kubectl get pods  
+
+--
+#pod.yaml
+
+apiVersion: v1
+kind: Pod
+metadata:
+   name: web
+spec: 
+   containters: 
+   - image: nginx
+     name: web
+     ports:
+     - containerPort: 80
+       name: http
+       protocol :TCP
+------------------------------------
+kubectl apply -f pod.yaml    //declarative
+
+steps: 
+api server valdite the req
+scaduler decide which not it should "scdeule the pod"
+
+
+-------------------
+
+GET Info :::
+
+kubectl get pods -o wide        //ip , node 
+kubectl descripe pods web  
+
+kubectl delete pods web 
+kubectl delete -f pod.yaml
+
+::change image name 
+
+kubectl apply -f pod.yaml
+
+kubectl get pods
+
+kubectl logs web
+
+kubectl logs -f web   //live events simple pod
+
+kubectl logs -f web -c web
+
+kubectl exex -it web -c nginx --date
+                               --bash
+
+
+
+------------------------------------------
+--livness,readiness and startup probes
+
+livenessProbe:   /action restart     اداء وهى شغالة
+   htttpGet:
+     path: /healty
+     port: 8080
+     initailDelayseconds: 5 #dfault is 0
+     timeoutSecands: 1 #defautl is 1
+     periodSeconds: 10 # default 10
+     failureThreshold: 3 #default 3
+     successThreshod : # default 1
+
+-----------
+
+readinessProbe:       /action out of serrvice 
+      httpGet:
+        path: /heqalthz
+        port:80 
+      intialDelaySeconds: 5
+      periodSecondS: 10
+ 
+    
+--------------
+StartupProbe:
+      httpGet:
+        path: /
+        port:80 
+      intialDelaySeconds: 5
+      periodSecondS: 10
+
+
+--------------------
+other methods  -
+livenessProbe:
+  tcpSocket: 
+    port: 3306
+  intialDelaySeconds: 5
+  periodSecondS: 10
+
+readinessProbe: 
+  exec:
+    command: 
+      - cat 
+      - /tmp/ready
+   intialDelaySeconds: 5
+   periodSecondS: 10
+
+--------
+1.4 kub ver
+
+gprc 
+ port :500051
+ service "my.gprc.service"
+intialDelaySeconds: 5
+periodSecondS: 10
+
+
+
+---------------------------------
+pods requests and limits
+
+
+spec: 
+  containers: 
+   - image : -----
+     name: --
+     resources: 
+       requests:
+         cpu: "500m"
+         memory: "128Mi"    على مستوى الكونتينر 
+       limits: 
+          cpu: "500m"
+          memory: "700Mi"
+
+
+----------------------------------------------
+
+volumes---
+
+types:: 
+ 1) EmptyDir     // data in pod  // data not persistant   // ex: cache
+
+
+ex:
+
+spec: 
+ containers:
+   - image : -----
+     name: --
+ volumes:
+    -name: cache-volme
+     emptyDir: 
+       sizeLimit: 500Mi   //or
+       medium: Memory     // يستخدم الميمورى مباشرة و لا يتعدى الرسورس المحدد
+        
+
+ ------
+2)  hostPath
+
+allow mount file - directory from host node   , less secure 
+
+ex:
+
+spec: 
+ containers:
+   - image : -----
+     name: --
+ volumes:
+    -name: hostpathvol
+     hostPath:
+       path: /etc/data 
+       type: DirectoryorCreate   or FileOrCreate  # 755 D defult , 442 file
+       type: Directory           or File
+--------
+
+3) nfs    //shared volumes best solution 
+  
+ex:
+
+ volumes:
+    -name: mynfs
+     nfs:
+       server: 192.168.2.138 
+       path : /path/tosahre
+       readOnly: true
+
+
+-------------
+lab 
+
+
+----------------------
+labels 
+
+apiVersion: v1
+kind: Pod
+metadata:
+   name: backend-service
+   labels:
+     app.kubernetes.io/component: "service"
+     app.kubernetes.io/name: "backend"
+     app.kubernetes.io/
+
+
+kubectl get pods --show --labels
+kubectl get pods -L app.kubernetes.io/component 
+kubectl get pods --selector="app.kubernetes.io/component="service"
+
+
+
+
+
